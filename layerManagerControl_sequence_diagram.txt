@@ -1,0 +1,8 @@
+@startuml
+
+User -> LayerManagerControl: set surface <id> destination region <x> <y> <w> <h>
+LayerManagerControl -> ilm_control_wayland_platform: ilm_surfaceSetDestinationRectangle(id, x, y, w, h)
+ilm_control_wayland_platform -> ilm_control_wayland_platform: ivi_wm_set_surface_destination_rectangle()
+ilm_control_wayland_platform -> ivi-shell::ivi-layout: ivi_layout_surface_set_destination_rectangle()
+
+@enduml
