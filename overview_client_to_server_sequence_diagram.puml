@@ -1,0 +1,37 @@
+@startuml
+title: Communication between a window manager and weston server
+
+box "Client side"
+participant controller_application
+participant ivi_api
+end box
+
+box "Server side"
+participant ivi_plugin
+participant ivi_shell
+end box
+
+note over ivi_api: e.g. agent-modules,\n input-modules,\n layermanagement-api
+/ note over ivi_plugin: aka weston-ivi-shell
+/ note over ivi_shell: a part of weston
+
+
+controller_application -> ivi_api: invoke
+ivi_api -> ivi_plugin: ivi_send_request
+ivi_plugin -> ivi_shell: invoke
+activate ivi_shell
+ivi_shell -> ivi_shell: process_event
+activate ivi_shell
+
+
+group optional
+
+ivi_plugin <-- ivi_shell: return
+deactivate ivi_shell
+deactivate ivi_shell
+ivi_api <-- ivi_plugin: ivi_send_event
+controller_application <-- ivi_api: return
+
+end
+
+@enduml
