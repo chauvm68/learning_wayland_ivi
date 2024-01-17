@@ -1,0 +1,41 @@
+@startuml
+
+title: Communication between two examples of controller application and Weston
+
+participant User
+
+box "Controler Application"
+participant "layer-add-surfaces"
+participant LayerManagerControl
+end box
+
+box "ivi api"
+participant ilmControl
+end box
+
+box "Weston"
+participant "weston-ivi-shell"
+participant "ivi-shell"
+end box
+
+
+' layer-add-surfaces
+User -> "layer-add-surfaces": layer-add-surfaces <id> <count of surfaces>
+"layer-add-surfaces" -> "layer-add-surfaces": choose_screen()
+"layer-add-surfaces" -> ilmControl: ilm_layerCreateWithDimension()
+ilmControl -> ilmControl: ilm_registerNotification()
+ilmControl -> "weston-ivi-shell": controller_create_layout_layer()
+"weston-ivi-shell" -> "ivi-shell": ivi_layout_layer_create_with_dimension()
+"ivi-shell" -> "wayland-server": wl_signal_emit()
+ilmControl <-- "wayland-server": wm_listener_layer_created()
+"layer-add-surfaces" <-- ilmControl: callBackFunction()
+
+' LayerManagerControl
+User -> LayerManagerControl: set surface <id> destination region <x> <y> <w> <h>
+LayerManagerControl -> ilmControl: ilm_surfaceSetDestinationRectangle()
+ilmControl -> ilmControl: ivi_wm_set_surface_destination_rectangle()
+ilmControl -> "weston-ivi-shell": controller_set_surface_destination_rectangle()
+"weston-ivi-shell" -> "ivi-shell": ivi_layout_surface_set_destination_rectangle()
+
+
+@enduml
